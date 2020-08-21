@@ -45,20 +45,12 @@ def uploads_file():
     im1.save(output, format='PNG')
     image_png = output.getvalue()
     #base64に変換
-    data = base64.b64encode(image_png)
+    data = base64.b64encode(image_png).decode("UTF-8")
     
-    return redirect(url_for('uploaded_file'))
+    return render_template("name.html", data=data)
 
   return '<html><body><form method = post enctype = multipart/form-data><p><input type=file name = file><input type = submit value = Upload></form></body></html>'
   #return render_template("mainpage.html")
-
-
-
-@app.route('/uploaded/')
-def uploaded_file():
-
-  return '<html><body>あああ</body></html>'
-  #return render_template("name.html")
 
 
 if __name__ == '__main__':
