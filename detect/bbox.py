@@ -1,7 +1,5 @@
 import cv2
 import numpy as np
-from matplotlib import pyplot as plt
-
 
 def y_positions(image, threshold):
     img_rgb = np.asarray(image)

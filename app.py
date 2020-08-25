@@ -32,7 +32,7 @@ def uploads_file():
     img = Image.open(io.BytesIO(byte))
 
     # pos empty list / tuple list
-    *pos, = y_positions(img,0.5)
+    *pos, = y_positions(img,0.7)
 
     data = [0]*len(pos)
 
@@ -67,7 +67,7 @@ def uploads_file_api():
     img = Image.open(io.BytesIO(byte))
 
     # pos empty list / tuple list
-    *pos, = y_positions(img,0.5)
+    *pos, = y_positions(img,0.7)
 
     data = [0]*len(pos)
 

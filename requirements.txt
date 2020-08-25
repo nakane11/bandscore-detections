@@ -4,3 +4,5 @@ pillow
 numpy
 fitz
 gunicorn
+opencv-python
+pyMuPDF
