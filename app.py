@@ -1,12 +1,12 @@
-from flask import Flask, request, redirect, url_for, render_template, send_from_directory, flash
+from flask import Flask, request, jsonify, flash, redirect, render_template
 from flask_cors import CORS
-import os
-from pdf2image import convert_from_bytes
-from pathlib import Path
+from detect.bbox import y_positions
 from PIL import Image
 import numpy as np
+import os
 import io 
 import base64
+import fitz
 
 app = Flask(__name__)
 CORS(app)
@@ -24,34 +24,75 @@ def uploads_file():
       #ファイルがなかった場合
       flash("メッセージ")
       return redirect(request.url)
+    
+    images = fitz.open(stream=request.files['file'].read(),filetype='pdf')
 
-    # poppler/binを環境変数PATHに追加する
-    poppler_dir = Path(__file__).parent.absolute() / "poppler/bin"
-    os.environ["PATH"] += os.pathsep + str(poppler_dir)
+    w=images[0].getPixmap().width
+    byte = images[0].getPixmap().getImageData()
+    img = Image.open(io.BytesIO(byte))
 
-    images = convert_from_bytes(request.files['file'].read())
+    # pos empty list / tuple list
+    *pos, = y_positions(img,0.5)
 
-    width=images[0].width #横幅を取得
+    data = [0]*len(pos)
 
     for i, image in enumerate(images):
+      byte = image.getPixmap().getImageData()
+      img = Image.open(io.BytesIO(byte))
       if i==0:
-        im1=image.crop((0, 75, width, 250))
+        for j in range(len(pos)):
+          data[j] = img.crop((0, pos[j][0], w, pos[j][1]))
       else:
-        im2 = image.crop((0, 75, width, 250))
-        im1=get_concat_v(im1, im2)
+        for j in range(len(pos)):
+          tmp = img.crop((0, pos[j][0], w, pos[j][1]))
+          data[j]=get_concat_v(data[j], tmp)
 
-    #バイナリーに変換
     output = io.BytesIO()
-    im1.save(output, format='PNG')
+    data[0].save(output, format='PNG')
     image_png = output.getvalue()
-    #base64に変換
-    data = base64.b64encode(image_png).decode("UTF-8")
-    
-    return render_template("name.html", data=data)
+    buff = base64.b64encode(image_png).decode("UTF-8")
+
+    return render_template("name.html", data=buff)
 
   return '<html><body><form method = post enctype = multipart/form-data><p><input type=file name = file><input type = submit value = Upload></form></body></html>'
   #return render_template("mainpage.html")
 
+@app.route('/api', methods=['POST'])
+def uploads_file_api():
+  try :
+    images = fitz.open(stream=request.files['file'].read(),filetype='pdf')
+
+    w=images[0].getPixmap().width
+    byte = images[0].getPixmap().getImageData()
+    img = Image.open(io.BytesIO(byte))
+
+    # pos empty list / tuple list
+    *pos, = y_positions(img,0.5)
+
+    data = [0]*len(pos)
+
+    for i, image in enumerate(images):
+      byte = image.getPixmap().getImageData()
+      img = Image.open(io.BytesIO(byte))
+      if i==0:
+        for j in range(len(pos)):
+          data[j] = img.crop((0, pos[j][0], w, pos[j][1]))
+      else:
+        for j in range(len(pos)):
+          tmp = img.crop((0, pos[j][0], w, pos[j][1]))
+          data[j]=get_concat_v(data[j], tmp)
+
+    buff = []
+    for d in data:
+      output = io.BytesIO()
+      d.save(output, format='PNG')
+      image_png = output.getvalue()
+      buff.append(base64.b64encode(image_png).decode("UTF-8"))
+
+    return jsonify({"img":buff, "msg": "success"})
+
+  except :
+    return jsonify({"img":[], "msg": "error"})
 
 if __name__ == '__main__':
-    app.run(debug=True, port=5000)
+    app.run()
