@@ -34,6 +34,9 @@ def uploads_file():
     # pos empty list / tuple list
     *pos, = y_positions(img,0.7)
 
+    if pos == []:
+      return jsonify({"img":[], "msg": "Not found"})
+
     data = [0]*len(pos)
 
     for i, image in enumerate(images):
@@ -68,6 +71,9 @@ def uploads_file_api():
 
     # pos empty list / tuple list
     *pos, = y_positions(img,0.7)
+
+    if pos == []:
+      return jsonify({"img":[], "msg": "Not found"})
 
     data = [0]*len(pos)
 
