@@ -32,7 +32,7 @@ def uploads_file():
     img = Image.open(io.BytesIO(byte))
 
     # pos empty list / tuple list
-    *pos, = y_positions(img,0.7)
+    *pos, = y_positions(img,0.6)
 
     if pos == []:
       return jsonify({"img":[], "msg": "Not found"})
@@ -70,7 +70,7 @@ def uploads_file_api():
     img = Image.open(io.BytesIO(byte))
 
     # pos empty list / tuple list
-    *pos, = y_positions(img,0.7)
+    *pos, = y_positions(img,0.6)
 
     if pos == []:
       return jsonify({"img":[], "msg": "Not found"})
