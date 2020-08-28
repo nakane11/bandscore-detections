@@ -12,4 +12,6 @@ RUN apt-get install -y libgl1-mesa-dev
 
 RUN pip install -r requirements.txt
 
-CMD ["flask", "run" "--host" "0.0.0.0"]
+ENV FLASK_APP /app.py
+
+CMD flask run -h 0.0.0.0 -p $PORT
