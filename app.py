@@ -43,11 +43,11 @@ def uploads_file():
       byte = image.getPixmap().getImageData()
       img = Image.open(io.BytesIO(byte))
       if i==0:
-        for j in range(len(pos)):
-          data[j] = img.crop((0, pos[j][0], w, pos[j][1]))
+        for j, p in enumerate(pos):
+          data[j] = img.crop((0, p[0], w, p[1]))
       else:
-        for j in range(len(pos)):
-          tmp = img.crop((0, pos[j][0], w, pos[j][1]))
+        for j, p in enumerate(pos):
+          tmp = img.crop((0, p[0], w, p[1]))
           data[j]=get_concat_v(data[j], tmp)
 
     output = io.BytesIO()
@@ -81,11 +81,11 @@ def uploads_file_api():
       byte = image.getPixmap().getImageData()
       img = Image.open(io.BytesIO(byte))
       if i==0:
-        for j in range(len(pos)):
-          data[j] = img.crop((0, pos[j][0], w, pos[j][1]))
+        for j, p in enumerate(pos):
+          data[j] = img.crop((0, p[0], w, p[1]))
       else:
-        for j in range(len(pos)):
-          tmp = img.crop((0, pos[j][0], w, pos[j][1]))
+        for j, p in enumerate(pos):
+          tmp = img.crop((0, p[0], w, p[1]))
           data[j]=get_concat_v(data[j], tmp)
 
     buff = []
